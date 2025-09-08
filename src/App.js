@@ -1,25 +1,187 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect,useState } from "react";
+import Addcontact from "./Addcontact";
+import Listofdoc from "./Listofdoc";
+import "./App.css"
+import Filterloc from "./Filterloc";
+import Searchdoc from "./Searchdoc";
+import Filterdays from "./Filterdays";
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+    const[docname,setDocname]=useState("")
+    const[lastMet,setLastMet]=useState("")
+    const[doclist,setDoclist]=useState([])
+    const[locationn,setLocationn]=useState("")
+    const[filterLocation,setfilterLocation]=useState([])
+    const[doctname,setDoctname]=useState("")
+    const[dayFilter,setDayFilter]=useState("")
 
+    
+
+    useEffect(() => {
+      fetch("http://127.0.0.1:8000/api/doctors/",{
+        method:"GET",
+        credentials:"include",
+        headers:{
+          "content-Type":"application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+      // Django gives last_met as "2025-08-21" → rename to match your React state
+        const formatted = data.map(doc => ({
+          id: doc.id,
+          name: doc.name,
+          location: doc.location ? doc.location.toLowerCase():"",
+          lastMet: doc.lastMet
+        }));
+        setDoclist(formatted);
+        })
+        .catch((err) => console.error("Error fetching doctors:", err));
+    }, []);
+    
+    const adddoclist = (e) => {
+      e.preventDefault();
+      if (!docname || !lastMet || !locationn) return;
+
+      const [year, month, day] = lastMet.split("-");
+      const ddmmyyyy = `${day}-${month}-${year}`;
+
+      fetch("http://127.0.0.1:8000/api/doctors/", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: docname,
+          lastMet: ddmmyyyy,   // backend expects YYYY-MM-DD
+          location: locationn
+        })
+      })
+        .then((res) => res.json())
+        .then((newDoc) => {
+          // 🔹 convert YYYY-MM-DD → DD-MM-YYYY
+          
+
+          setDoclist([
+            ...doclist,
+            {
+              id: newDoc.id,
+              name: newDoc.name,
+              location: newDoc.location.toLowerCase(),
+              lastMet: newDoc.lastMet // keep consistent with others
+            }
+          ]);
+          setLocationn("");
+          setDocname("");
+          setLastMet("");
+        })
+        .catch((err) => console.error("Error adding doctor:", err));
+    };
+   
+          
+      const handlefilter =(e)=>{
+      const value=e.target.value;
+      const checked = e.target.checked;
+      if (checked){
+        if (!filterLocation.includes(value)){
+        setfilterLocation([...filterLocation,value]);
+      } else {
+        setfilterLocation(filterLocation.filter((loc)=> loc !== value));
+      }
+    }
+      }
+
+      const parseDDMMYYYY = (dateStr) => {
+      const [day, month, year] = dateStr.split("-");
+      return new Date(`${year}-${month}-${day}`); // Convert to YYYY-MM-DD
+    };
+
+  const daysremaining = (lastMet) => {
+    const today = new Date();
+    const lastMetDate = parseDDMMYYYY(lastMet);
+
+    const diffTime = today - lastMetDate;
+    const daysdonee = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const remaindays = 10 - daysdonee;
+
+    return {
+      daysremainingg: remaindays > 0 ? remaindays : 0,
+      dayspassed: daysdonee
+    };
+  };
+      const clearfilter =()=>{
+        setfilterLocation([]);
+      }
+
+
+
+      const searchhdoc= doclist
+      .filter((doc)=>
+        doc.name.toLowerCase().includes(doctname.toLowerCase())
+      )
+      .filter((doc)=>
+        filterLocation.length === 0 || filterLocation.includes(doc.location)
+      )
+      .filter((doc)=>{
+        const days=daysremaining(doc.lastMet);
+      switch(dayFilter){
+        case "Morethan10days":
+          return days.dayspassed>10;
+        case "Morethan20days":
+          return days.dayspassed>20 && days.dayspassed<30;
+        case "Morethan30days":
+          return days.dayspassed>30;
+        default:
+          return true;
+      }
+      })
+
+      const uniqlocation=[...new Set(doclist.map(doc=>doc.location))]
+      
+    
+  return (
+    <>
+    <Addcontact
+      adddoclist={adddoclist}
+      docname={docname}
+      setDocname={setDocname}
+      lastMet={lastMet}
+      setLastMet={setLastMet}
+      locationn={locationn}
+      setLocationn={setLocationn}
+      
+    />
+
+    <Searchdoc 
+      doctname={doctname}
+      setDoctname={setDoctname}
+      searchhdoc={searchhdoc}
+    />
+
+    <Filterdays 
+      dayFilter={dayFilter}
+      setDayFilter={setDayFilter}
+    />
+
+    <Filterloc 
+      filterLocation={filterLocation}
+      setfilterLocation={setfilterLocation}
+      uniqlocation={uniqlocation}
+      handlefilter={handlefilter}
+      clearfilter={clearfilter}
+    />
+
+    <Listofdoc 
+      doclist={searchhdoc}
+      setDoclist={setDoclist}
+      daysremaining={daysremaining}
+      
+      
+    />
+    </>
+  );
+
+}
 export default App;
