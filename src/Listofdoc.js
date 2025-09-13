@@ -1,4 +1,6 @@
 import React, { useState,useEffect} from 'react'
+import './Listofdoc.css' 
+
 
 const Listofdoc = ({doclist,setDoclist,daysremaining}) => {
 
@@ -127,6 +129,8 @@ const handleDownloadPdf = (year, month) => {
                 <th className="tc" >Update the date</th>
                 <th className="tc">Update</th>
                 <th className='tc'>DELETE</th>
+                <th className='tc'>Download as PDF</th>
+
             </tr>
         </thead>
         <tbody>
@@ -179,7 +183,7 @@ const handleDownloadPdf = (year, month) => {
   
   <div>
         <button
-          className="pdf-btn"
+          className="pdf-action-btn"
           onClick={() =>
             window.open(
               "http://127.0.0.1:8000/api/download/all-doctors/pdf/",
@@ -190,9 +194,12 @@ const handleDownloadPdf = (year, month) => {
           Download PDF
         </button>
       </div>
+
+
+      
       <div className="my-4">
-        <button
-          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+        <button 
+          className="pdf-action-btn"
           onClick={handleSendEmail}
           disabled={emailLoading}
         >
@@ -203,13 +210,13 @@ const handleDownloadPdf = (year, month) => {
 
 
       <div className="p-4">
-        <h2 className="text-xl font-bold mb-3">Download Monthly Doctor Reports</h2>
-        <div className="flex flex-wrap gap-2">
+        <h2 className="btn">Download Monthly Doctor Reports</h2>
+        <div className="">
           {months.map((m) => (
             <button
               key={`${m.year}-${m.month}`}
               onClick={() => handleDownloadPdf(m.year, m.month)}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              className="month-button"
             >
               {m.label}
             </button>

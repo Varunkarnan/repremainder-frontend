@@ -1,0 +1,296 @@
+/* ============================ */
+/* Doctor List Table Premium CSS */
+/* ============================ */
+
+.table {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 0%;
+  padding: 10px;
+}
+
+.tablee {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Inter', sans-serif;
+  background-color: #f9fafb;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.tablee thead {
+  background: linear-gradient(135deg, #5a67f2, #434aa8);
+  color: white;
+}
+
+.tablee th, .tablee td {
+  padding: 12px 15px;
+  text-align: center;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tablee th.tc, .tablee td.tc {
+  text-align: center;
+}
+
+.tablee tbody tr {
+  background-color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.tablee tbody tr:nth-child(even) {
+  background-color: #f1f5f9;
+}
+
+.tablee tbody tr:hover {
+  background-color: #e0e7ff;
+  transform: scale(1.01);
+  box-shadow: 0 4px 15px rgba(90,103,242,0.2);
+}
+
+.tablee button {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 0.85rem;
+}
+
+.tablee button:hover {
+  transform: scale(1.05);
+}
+
+.tablee button.update-btn {
+  background: linear-gradient(135deg, #2563eb, #06b6d4);
+  color: #fff;
+}
+
+.tablee button.update-btn:hover {
+  background: linear-gradient(135deg, #1d4ed8, #0891b2);
+}
+
+.tablee button.delete-btn {
+  background: linear-gradient(135deg, #ef4444, #f87171);
+  color: #fff;
+}
+
+.tablee button.delete-btn:hover {
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+}
+
+.tablee button.download-btn {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: #fff;
+}
+
+.tablee button.download-btn:hover {
+  background: linear-gradient(135deg, #059669, #10b981);
+}
+
+/* Input date fields */
+.tablee input[type="date"] {
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e0;
+  font-size: 0.9rem;
+  transition: 0.3s;
+  text-align: center;
+}
+
+.tablee input[type="date"]:focus {
+  outline: none;
+  border-color: #5a67f2;
+  box-shadow: 0 4px 12px rgba(90,103,242,0.2);
+  background-color: #fff;
+}
+
+/* PDF button and email button */
+.pdf-btn, .email-btn {
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  border-radius: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+  margin: 10px 0;
+}
+
+.pdf-btn {
+  background: linear-gradient(135deg, #2563eb, #06b6d4);
+  color: white;
+}
+
+.pdf-btn:hover {
+  background: linear-gradient(135deg, #1d4ed8, #0891b2);
+  transform: scale(1.05);
+}
+
+.email-btn {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: white;
+}
+
+.email-btn:hover {
+  background: linear-gradient(135deg, #059669, #10b981);
+  transform: scale(1.05);
+}
+
+/* Monthly Report buttons */
+.premium-monthly-btn {
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+  background: linear-gradient(135deg, #5a67f2, #434aa8);
+  color: white;
+}
+
+.premium-monthly-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #434aa8, #5a67f2);
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .tablee th, .tablee td {
+    padding: 10px 8px;
+    font-size: 0.85rem;
+  }
+
+  .premium-monthly-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+}
+
+/* ============================ */
+/* General Button Styles        */
+/* ============================ */
+.pdf-btn,
+.email-btn,
+.monthly-btn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border: none;
+}
+
+/* Download PDF Button */
+.pdf-btn {
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  color: white;
+}
+
+.pdf-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
+
+/* Send Doctors PDF to Email Button */
+.email-btn {
+  background: linear-gradient(135deg, #10b981, #059669); /* green gradient */
+  color: white;
+}
+
+.email-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #059669, #047857);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
+
+/* Disabled state for email button */
+.email-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Monthly Doctor Reports Buttons */
+.monthly-btn {
+  background: linear-gradient(135deg, #3b82f6, #06b6d4); /* blue gradient */
+  color: white;
+}
+
+.monthly-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #1d4ed8, #0891b2);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
+
+/* Optional: Group spacing */
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+
+/* ============================ */
+/* Unified PDF & Action Buttons  */
+/* ============================ */
+.pdf-action-btn {
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  color: white;
+  background: linear-gradient(135deg, #2563eb, #06b6d4); /* blue gradient */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-size: 14px;
+}
+
+.pdf-action-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #1d4ed8, #0891b2);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
+
+/* Disabled state for action buttons */
+.pdf-action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.btn{
+    background: linear-gradient(135deg, #ff0000, #000000);
+    border: none;
+    color: white;
+    padding: 5px 9px;
+    width: 400px;
+}
+  
+
+.month-button {
+  background: white; /* plain background */
+  color: #2563eb; /* accent color (blue) */
+  border: 2px solid #2563eb; /* accent border */
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  margin: 4px;
+}
+
+.month-button:hover {
+  background: #2563eb; /* fill with accent color on hover */
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
