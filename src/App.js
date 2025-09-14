@@ -6,6 +6,22 @@ import Filterdays from "./Filterdays";
 import Filterloc from "./Filterloc";
 import "./App.css";
 
+// Helper to get CSRF token from cookies
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.startsWith(name + "=")) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
 function App() {
   const [docname, setDocname] = useState("");
   const [lastMet, setLastMet] = useState("");
@@ -17,6 +33,7 @@ function App() {
 
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
+  // Fetch all doctors on mount
   useEffect(() => {
     fetch(`${backendUrl}/api/doctors/`, {
       method: "GET",
@@ -36,6 +53,7 @@ function App() {
       .catch((err) => console.error("Error fetching doctors:", err));
   }, [backendUrl]);
 
+  // Add a new doctor
   const adddoclist = (e) => {
     e.preventDefault();
     if (!docname || !lastMet || !locationn) return;
@@ -46,7 +64,10 @@ function App() {
     fetch(`${backendUrl}/api/doctors/`, {
       method: "POST",
       credentials: "include",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCookie("csrftoken"),
+      },
       body: JSON.stringify({ name: docname, lastMet: ddmmyyyy, location: locationn }),
     })
       .then((res) => res.json())
@@ -67,23 +88,24 @@ function App() {
       .catch((err) => console.error("Error adding doctor:", err));
   };
 
+  // Handle location filter
   const handlefilter = (e) => {
     const value = e.target.value;
     const checked = e.target.checked;
     if (checked) {
-      if (!filterLocation.includes(value)) {
-        setfilterLocation([...filterLocation, value]);
-      } else {
-        setfilterLocation(filterLocation.filter((loc) => loc !== value));
-      }
+      if (!filterLocation.includes(value)) setfilterLocation([...filterLocation, value]);
+    } else {
+      setfilterLocation(filterLocation.filter((loc) => loc !== value));
     }
   };
 
+  // Parse DD-MM-YYYY to JS Date
   const parseDDMMYYYY = (dateStr) => {
     const [day, month, year] = dateStr.split("-");
     return new Date(`${year}-${month}-${day}`);
   };
 
+  // Days remaining calculation
   const daysremaining = (lastMet) => {
     const today = new Date();
     const lastMetDate = parseDDMMYYYY(lastMet);
@@ -95,6 +117,7 @@ function App() {
 
   const clearfilter = () => setfilterLocation([]);
 
+  // Filtered doctor list
   const searchhdoc = doclist
     .filter((doc) => doc.name.toLowerCase().includes(doctname.toLowerCase()))
     .filter((doc) => filterLocation.length === 0 || filterLocation.includes(doc.location))
@@ -116,7 +139,6 @@ function App() {
 
   return (
     <>
-      {/* Keep Add Doctor modal independent */}
       <div className="top-section">
         <Addcontact
           adddoclist={adddoclist}
@@ -128,26 +150,22 @@ function App() {
           setLocationn={setLocationn}
         />
 
-      {/* Top-right premium filters & search */}
-      <div className="top-right-filters">
-        <Searchdoc doctname={doctname} setDoctname={setDoctname} />
-        <Filterdays dayFilter={dayFilter} setDayFilter={setDayFilter} />
-        <Filterloc
-          filterLocation={filterLocation}
-          setfilterLocation={setfilterLocation}
-          uniqlocation={uniqlocation}
-          handlefilter={handlefilter}
-          clearfilter={clearfilter}
-        />
-      </div>
+        <div className="top-right-filters">
+          <Searchdoc doctname={doctname} setDoctname={setDoctname} />
+          <Filterdays dayFilter={dayFilter} setDayFilter={setDayFilter} />
+          <Filterloc
+            filterLocation={filterLocation}
+            setfilterLocation={setfilterLocation}
+            uniqlocation={uniqlocation}
+            handlefilter={handlefilter}
+            clearfilter={clearfilter}
+          />
+        </div>
       </div>
 
-
-      {/* List of doctors */}
       <div className="table-container">
         <Listofdoc doclist={searchhdoc} setDoclist={setDoclist} daysremaining={daysremaining} />
       </div>
-      
     </>
   );
 }
