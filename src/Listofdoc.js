@@ -9,22 +9,23 @@ const Listofdoc = ({doclist,setDoclist,daysremaining}) => {
   const [months, setMonths] = useState([])
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailMessage, setEmailMessage] = useState("");
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
   
   useEffect(() => {
-  fetch("http://127.0.0.1:8000/doctors/months/", { credentials: "include" })
+  fetch(`${backendUrl}/doctors/months/`, { credentials: "include" })
     .then((res) => res.json())
     .then((data) => {
       const formattedMonths = (data.months || []).map((m) => ({
         year: m.year,
         month: m.month,
         label: m.label, // already "July 2025", etc.
-        url: `http://127.0.0.1:8000${m.download_url}`, // ✅ use backend-provided URL
+        url: `${backendUrl}${m.download_url}`, // ✅ use backend-provided URL
       }));
       setMonths(formattedMonths);
     })
     .catch((err) => console.error("Error fetching months:", err));
-}, []);
+}, [backendUrl]);
 
 
       const handleSendEmail = async () => {
@@ -32,7 +33,7 @@ const Listofdoc = ({doclist,setDoclist,daysremaining}) => {
       setEmailMessage("");
 
       try {
-        const response = await fetch("http://127.0.0.1:8000/send-doctors-email/", {
+        const response = await fetch(`${backendUrl}/send-doctors-email/`, {
           method: "GET", // Django view handles sending email
           credentials: "include",
         });
@@ -70,7 +71,7 @@ const Listofdoc = ({doclist,setDoclist,daysremaining}) => {
   const [year, month, day] = selectdate.split("-");
   const ddmmyyyy = `${day}-${month}-${year}`;
 
-  fetch(`http://127.0.0.1:8000/api/doctors/${id}/update/`, {
+  fetch(`${backendUrl}/${id}/update/`, {
     method: "PUT",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
@@ -94,7 +95,7 @@ const Listofdoc = ({doclist,setDoclist,daysremaining}) => {
   const handleDlt = (id) => {
   const confirmdlt = window.confirm("Are you sure you want to delete this doctor?");
   if (confirmdlt) {
-    fetch(`http://127.0.0.1:8000/api/doctors/${id}/delete/`, {
+    fetch(`${backendUrl}/api/doctors/${id}/delete/`, {
       method: "DELETE",
       credentials:"include",
     })
@@ -109,7 +110,7 @@ const Listofdoc = ({doclist,setDoclist,daysremaining}) => {
   }
 };
 const handleDownloadPdf = (year, month) => {
-  window.open(`http://127.0.0.1:8000/doctors/pdf/${year}/${month}/`, "_blank");
+  window.open(`${backendUrl}/doctors/pdf/${year}/${month}/`, "_blank");
 };
 
 
@@ -168,7 +169,7 @@ const handleDownloadPdf = (year, month) => {
               </td>
               <td className="tc">
                 <button onClick={() => window.open(
-                  `http://127.0.0.1:8000/api/doctors/${doc.id}/download-history/`, "_blank")}>
+                  `${backendUrl}/api/doctors/${doc.id}/download-history/`, "_blank")}>
                   Download PDF
                 </button>
               </td>
@@ -186,7 +187,7 @@ const handleDownloadPdf = (year, month) => {
           className="pdf-action-btn"
           onClick={() =>
             window.open(
-              "http://127.0.0.1:8000/api/download/all-doctors/pdf/",
+              `${backendUrl}/api/download/all-doctors/pdf/` ,
               "_blank"
             )
           }

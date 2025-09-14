@@ -15,8 +15,10 @@ function App() {
   const [doctname, setDoctname] = useState("");
   const [dayFilter, setDayFilter] = useState("");
 
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/doctors/", {
+    fetch(`${backendUrl}/api/doctors/`, {
       method: "GET",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -32,7 +34,7 @@ function App() {
         setDoclist(formatted);
       })
       .catch((err) => console.error("Error fetching doctors:", err));
-  }, []);
+  }, [backendUrl]);
 
   const adddoclist = (e) => {
     e.preventDefault();
@@ -41,7 +43,7 @@ function App() {
     const [year, month, day] = lastMet.split("-");
     const ddmmyyyy = `${day}-${month}-${year}`;
 
-    fetch("http://127.0.0.1:8000/api/doctors/", {
+    fetch(`${backendUrl}/api/doctors/`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
