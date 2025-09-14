@@ -25,7 +25,7 @@ const Listofdoc = ({doclist,setDoclist,daysremaining}) => {
       setMonths(formattedMonths);
     })
     .catch((err) => console.error("Error fetching months:", err));
-}, [backendUrl]);
+}, []);
 
 
       const handleSendEmail = async () => {
@@ -71,7 +71,7 @@ const Listofdoc = ({doclist,setDoclist,daysremaining}) => {
   const [year, month, day] = selectdate.split("-");
   const ddmmyyyy = `${day}-${month}-${year}`;
 
-  fetch(`${backendUrl}/${id}/update/`, {
+  fetch(`${backendUrl}/api/doctors/${id}/update/`, {
     method: "PUT",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
@@ -187,7 +187,7 @@ const handleDownloadPdf = (year, month) => {
           className="pdf-action-btn"
           onClick={() =>
             window.open(
-              `${backendUrl}/api/download/all-doctors/pdf/` ,
+              `${backendUrl}/api/download/all-doctors/pdf/`,
               "_blank"
             )
           }
