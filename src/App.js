@@ -40,7 +40,7 @@ function App() {
       return;
     }
 
-    fetch(`${backendUrl}/api/doctors/`, {
+    fetch(`https://repremainder-backend-production.up.railway.app/api/doctors/`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })
