@@ -88,7 +88,6 @@ function App() {
         if (!res.ok) throw new Error(`Failed to add doctor: ${res.status}`);
         return res.json();
       })
-      console.log("hello")
       .then((newDoc) => {
         setDoclist([
           ...doclist,

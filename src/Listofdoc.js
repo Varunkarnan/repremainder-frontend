@@ -35,7 +35,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
           year: m.year,
           month: m.month,
           label: m.label,
-          url: `${backendUrl}${m.download_url}`,
+          url: `https://repremainder-backend-production.up.railway.app/${m.download_url}`,
         }));
         setMonths(formattedMonths);
       })
