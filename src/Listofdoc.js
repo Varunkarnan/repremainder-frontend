@@ -23,7 +23,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining, backendUrl }) => {
   useEffect(() => {
     if (!backendUrl) return;
 
-    fetch(`${backendUrl}/api/doctors/months/`, { credentials: "include" })
+    fetch(`${backendUrl}/doctors/months/`, { credentials: "include" })
       .then((res) => res.json())
       .then((data) => {
         const formattedMonths = (data.months || []).map((m) => ({
