@@ -33,18 +33,18 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
           year: m.year,
           month: m.month,
           label: m.label,
-          url: `${backendUrl}/${m.download_url}`,
+          url: `${API_BASE_URL}/${m.download_url}`,
         }));
         setMonths(formattedMonths);
       })
       .catch((err) => console.error("Error fetching months:", err));
-  }, [backendUrl]);
+  }, []);
 
   const handleSendEmail = async () => {
     setEmailLoading(true);
     setEmailMessage("");
     try {
-      const response = await fetch(`${backendUrl}/send-doctors-email/`, {
+      const response = await fetch(`${API_BASE_URL}/send-doctors-email/`, {
         method: "GET",
         credentials: "include",
       });
