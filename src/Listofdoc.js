@@ -23,6 +23,8 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
   const [emailMessage, setEmailMessage] = useState("");
   const backendUrl = process.env.REACT_APP_API_URL;
 
+  console.log("Backend URL:", backendUrl);
+
   useEffect(() => {
     fetch(`${backendUrl}/api/doctors/months/`, {
       credentials: "include",
