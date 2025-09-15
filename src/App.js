@@ -43,10 +43,10 @@ function App() {
       headers: { "Content-Type": "application/json" },
       credentials: "include", // important for Django session
     })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        return res.json();
-      })
+      // .then((!res) => {
+      //   throw new Error(`HTTP error! status: ${res.status}`);
+        
+      // })
       .then((data) => {
         console.log("Fetched doctors:", data);
         const doctorArray = data.results ? data.results : data;
