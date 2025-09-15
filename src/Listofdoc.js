@@ -24,10 +24,10 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining, backendUrl }) => {
     if (!backendUrl) return;
 
     fetch(`${backendUrl}/doctors/months/`, { credentials: "include" })
-      .then((res) =>{
-        res.json()
-        console.log(res)
-      }) 
+      // .then((res) =>{
+      //   res.json()
+      //   console.log(res)
+      // }) 
       
       .then((data) => {
         console.log(data)
