@@ -31,16 +31,25 @@ function App() {
   const [doctname, setDoctname] = useState("");
   const [dayFilter, setDayFilter] = useState("");
 
+  // Make sure you have REACT_APP_BACKEND_URL in your .env
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
   // Fetch all doctors on mount
   useEffect(() => {
+    if (!backendUrl) {
+      console.error("REACT_APP_BACKEND_URL is not defined!");
+      return;
+    }
+
     fetch(`${backendUrl}/api/doctors/`, {
       method: "GET",
-      credentials: "include",
+      credentials: "include", // required for CSRF and sessions
       headers: { "Content-Type": "application/json" },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         const formatted = data.map((doc) => ({
           id: doc.id,
@@ -56,8 +65,12 @@ function App() {
   // Add a new doctor
   const adddoclist = (e) => {
     e.preventDefault();
-    if (!docname || !lastMet || !locationn) return;
+    if (!docname || !lastMet || !locationn) {
+      alert("Please fill all fields!");
+      return;
+    }
 
+    // Convert YYYY-MM-DD (input type=date) to DD-MM-YYYY
     const [year, month, day] = lastMet.split("-");
     const ddmmyyyy = `${day}-${month}-${year}`;
 
@@ -66,11 +79,14 @@ function App() {
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        "X-CSRFToken": getCookie("csrftoken"),
+        "X-CSRFToken": getCookie("csrftoken"), // CSRF token for POST
       },
       body: JSON.stringify({ name: docname, lastMet: ddmmyyyy, location: locationn }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`Failed to add doctor: ${res.status}`);
+        return res.json();
+      })
       .then((newDoc) => {
         setDoclist([
           ...doclist,
@@ -88,7 +104,7 @@ function App() {
       .catch((err) => console.error("Error adding doctor:", err));
   };
 
-  // Handle location filter
+  // Filter and search logic remains the same
   const handlefilter = (e) => {
     const value = e.target.value;
     const checked = e.target.checked;
@@ -99,13 +115,11 @@ function App() {
     }
   };
 
-  // Parse DD-MM-YYYY to JS Date
   const parseDDMMYYYY = (dateStr) => {
     const [day, month, year] = dateStr.split("-");
     return new Date(`${year}-${month}-${day}`);
   };
 
-  // Days remaining calculation
   const daysremaining = (lastMet) => {
     const today = new Date();
     const lastMetDate = parseDDMMYYYY(lastMet);
@@ -117,7 +131,6 @@ function App() {
 
   const clearfilter = () => setfilterLocation([]);
 
-  // Filtered doctor list
   const searchhdoc = doclist
     .filter((doc) => doc.name.toLowerCase().includes(doctname.toLowerCase()))
     .filter((doc) => filterLocation.length === 0 || filterLocation.includes(doc.location))
