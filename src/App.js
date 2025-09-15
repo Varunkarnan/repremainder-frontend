@@ -32,7 +32,7 @@ function App() {
   const [dayFilter, setDayFilter] = useState("");
 
   // Make sure you have REACT_APP_BACKEND_URL in your .env
-  const backendUrl = process.env.REACT_APP_BACKEND_URL;
+  const backendUrl = process.env.REACT_APP_API_URL;
 
   // Fetch all doctors on mount
   useEffect(() => {

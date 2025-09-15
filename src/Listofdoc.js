@@ -21,7 +21,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
   const [months, setMonths] = useState([]);
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailMessage, setEmailMessage] = useState("");
-  const backendUrl = process.env.REACT_APP_BACKEND_URL;
+  const backendUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetch(`${backendUrl}/api/doctors/months/`, {
