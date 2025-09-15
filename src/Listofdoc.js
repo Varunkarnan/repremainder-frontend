@@ -26,7 +26,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
   console.log("Backend URL:", backendUrl);
 
   useEffect(() => {
-    fetch(`https://repremainder-backend-production.up.railway.app/api/doctors/months/`, {
+    fetch(`${backendUrl}/api/doctors/months/`, {
       credentials: "include",
     })
       .then((res) => res.json())
@@ -35,7 +35,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
           year: m.year,
           month: m.month,
           label: m.label,
-          url: `https://repremainder-backend-production.up.railway.app/${m.download_url}`,
+          url: `${backendUrl}/${m.download_url}`,
         }));
         setMonths(formattedMonths);
       })
@@ -46,7 +46,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
     setEmailLoading(true);
     setEmailMessage("");
     try {
-      const response = await fetch(`https://repremainder-backend-production.up.railway.app/send-doctors-email/`, {
+      const response = await fetch(`${backendUrl}/send-doctors-email/`, {
         method: "GET",
         credentials: "include",
       });
@@ -69,7 +69,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
     const [year, month, day] = selectdate.split("-");
     const ddmmyyyy = `${day}-${month}-${year}`;
 
-    fetch(`https://repremainder-backend-production.up.railway.app/api/doctors/${id}/update/`, {
+    fetch(`${backendUrl}/api/doctors/${id}/update/`, {
       method: "PUT",
       credentials: "include",
       headers: {
@@ -93,7 +93,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
 
   const handleDlt = (id) => {
     if (!window.confirm("Are you sure you want to delete this doctor?")) return;
-    fetch(`https://repremainder-backend-production.up.railway.app/api/doctors/${id}/delete/`, {
+    fetch(`${backendUrl}/api/doctors/${id}/delete/`, {
       method: "DELETE",
       credentials: "include",
       headers: { "X-CSRFToken": getCookie("csrftoken") },
@@ -106,7 +106,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
   };
 
   const handleDownloadPdf = (year, month) => {
-    window.open(`https://repremainder-backend-production.up.railway.app/doctors/pdf/${year}/${month}/`, "_blank");
+    window.open(`${backendUrl}/doctors/pdf/${year}/${month}/`, "_blank");
   };
 
   return (
