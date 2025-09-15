@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Listofdoc.css";
+import { API_BASE_URL } from "./config";
 
 function getCookie(name) {
   let cookieValue = null;
@@ -21,12 +22,9 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
   const [months, setMonths] = useState([]);
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailMessage, setEmailMessage] = useState("");
-  const backendUrl = process.env.REACT_APP_API_URL;
-
-  console.log("Backend URL:", backendUrl);
-
+  
   useEffect(() => {
-    fetch(`${backendUrl}/api/doctors/months/`, {
+    fetch(`${API_BASE_URL}/api/doctors/months/`, {
       credentials: "include",
     })
       .then((res) => res.json())
@@ -69,7 +67,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
     const [year, month, day] = selectdate.split("-");
     const ddmmyyyy = `${day}-${month}-${year}`;
 
-    fetch(`${backendUrl}/api/doctors/${id}/update/`, {
+    fetch(`${API_BASE_URL}/api/doctors/${id}/update/`, {
       method: "PUT",
       credentials: "include",
       headers: {
@@ -93,7 +91,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
 
   const handleDlt = (id) => {
     if (!window.confirm("Are you sure you want to delete this doctor?")) return;
-    fetch(`${backendUrl}/api/doctors/${id}/delete/`, {
+    fetch(`${API_BASE_URL}/api/doctors/${id}/delete/`, {
       method: "DELETE",
       credentials: "include",
       headers: { "X-CSRFToken": getCookie("csrftoken") },
@@ -106,7 +104,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
   };
 
   const handleDownloadPdf = (year, month) => {
-    window.open(`${backendUrl}/doctors/pdf/${year}/${month}/`, "_blank");
+    window.open(`${API_BASE_URL}/doctors/pdf/${year}/${month}/`, "_blank");
   };
 
   return (
@@ -156,7 +154,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
                     <button
                       onClick={() =>
                         window.open(
-                          `https://repremainder-backend-production.up.railway.app/api/doctors/${doc.id}/download-history/`,
+                          `${API_BASE_URL}/api/doctors/${doc.id}/download-history/`,
                           "_blank"
                         )
                       }
@@ -174,7 +172,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
       <div>
         <button
           className="pdf-action-btn"
-          onClick={() => window.open(`https://repremainder-backend-production.up.railway.app/api/download/all-doctors/pdf/`, "_blank")}
+          onClick={() => window.open(`${API_BASE_URL}/api/download/all-doctors/pdf/`, "_blank")}
         >
           Download PDF
         </button>
