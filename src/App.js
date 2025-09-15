@@ -6,18 +6,16 @@ import Filterdays from "./Filterdays";
 import Filterloc from "./Filterloc";
 import "./App.css";
 
-// Helper to get CSRF token from cookies
+// Helper to get CSRF token
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== "") {
-    const cookies = document.cookie.split(";");
-    for (let cookie of cookies) {
-      cookie = cookie.trim();
-      if (cookie.startsWith(name + "=")) {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
+    document.cookie.split(";").forEach((cookie) => {
+      const c = cookie.trim();
+      if (c.startsWith(name + "=")) {
+        cookieValue = decodeURIComponent(c.substring(name.length + 1));
       }
-    }
+    });
   }
   return cookieValue;
 }
@@ -33,24 +31,24 @@ function App() {
 
   const backendUrl = process.env.REACT_APP_API_URL;
 
-  // Fetch all doctors on mount
+  // Fetch all doctors
   useEffect(() => {
     if (!backendUrl) {
       console.error("REACT_APP_API_URL is not defined!");
       return;
     }
 
-    fetch(`https://repremainder-backend-production.up.railway.app/api/doctors/`, {
+    fetch(`${backendUrl}/api/doctors/`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
+      credentials: "include", // important for Django session
     })
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         return res.json();
       })
       .then((data) => {
-        console.log("Fetched doctors:", data); // Debug API response
-        // Handle paginated (results) or plain array
+        console.log("Fetched doctors:", data);
         const doctorArray = data.results ? data.results : data;
         const formatted = doctorArray.map((doc) => ({
           id: doc.id,
@@ -63,7 +61,7 @@ function App() {
       .catch((err) => console.error("Error fetching doctors:", err));
   }, [backendUrl]);
 
-  // Add a new doctor
+  // Add doctor
   const adddoclist = (e) => {
     e.preventDefault();
     if (!docname || !lastMet || !locationn) {
@@ -71,17 +69,16 @@ function App() {
       return;
     }
 
-    // Convert YYYY-MM-DD to DD-MM-YYYY
     const [year, month, day] = lastMet.split("-");
     const ddmmyyyy = `${day}-${month}-${year}`;
 
-    fetch(`https://repremainder-backend-production.up.railway.app/api/doctors/`, {
-      
+    fetch(`${backendUrl}/api/doctors/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-CSRFToken": getCookie("csrftoken"),
       },
+      credentials: "include",
       body: JSON.stringify({ name: docname, lastMet: ddmmyyyy, location: locationn }),
     })
       .then((res) => {
@@ -178,7 +175,12 @@ function App() {
       </div>
 
       <div className="table-container">
-        <Listofdoc doclist={searchhdoc} setDoclist={setDoclist} daysremaining={daysremaining} />
+        <Listofdoc
+          doclist={searchhdoc}
+          setDoclist={setDoclist}
+          daysremaining={daysremaining}
+          backendUrl={backendUrl}
+        />
       </div>
     </>
   );
