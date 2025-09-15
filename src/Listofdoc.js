@@ -149,9 +149,10 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining, backendUrl }) => {
                     <button onClick={() => handleDlt(doc.id)}>DELETE</button>
                   </td>
                   <td>
+
                     <button
                       onClick={() =>
-                        window.open(`${backendUrl}/api/doctors/${doc.id}/download-history/`, "_blank")
+                        window.open(`${backendUrl}/api/download/all-doctors/pdf/`, "_blank")
                       }
                     >
                       Download PDF
