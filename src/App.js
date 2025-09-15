@@ -31,19 +31,17 @@ function App() {
   const [doctname, setDoctname] = useState("");
   const [dayFilter, setDayFilter] = useState("");
 
-  // Make sure you have REACT_APP_BACKEND_URL in your .env
   const backendUrl = process.env.REACT_APP_API_URL;
 
   // Fetch all doctors on mount
   useEffect(() => {
     if (!backendUrl) {
-      console.error("REACT_APP_BACKEND_URL is not defined!");
+      console.error("REACT_APP_API_URL is not defined!");
       return;
     }
 
     fetch(`${backendUrl}/api/doctors/`, {
       method: "GET",
-      credentials: "include", // required for CSRF and sessions
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => {
@@ -51,7 +49,10 @@ function App() {
         return res.json();
       })
       .then((data) => {
-        const formatted = data.map((doc) => ({
+        console.log("Fetched doctors:", data); // Debug API response
+        // Handle paginated (results) or plain array
+        const doctorArray = data.results ? data.results : data;
+        const formatted = doctorArray.map((doc) => ({
           id: doc.id,
           name: doc.name,
           location: doc.location ? doc.location.toLowerCase() : "",
@@ -70,16 +71,16 @@ function App() {
       return;
     }
 
-    // Convert YYYY-MM-DD (input type=date) to DD-MM-YYYY
+    // Convert YYYY-MM-DD to DD-MM-YYYY
     const [year, month, day] = lastMet.split("-");
     const ddmmyyyy = `${day}-${month}-${year}`;
 
-    fetch(`${backendUrl}/api/doctors/`, {
+    fetch(`https://repremainder-backend-production.up.railway.app/api/doctors/`, {
+      
       method: "POST",
-      credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        "X-CSRFToken": getCookie("csrftoken"), // CSRF token for POST
+        "X-CSRFToken": getCookie("csrftoken"),
       },
       body: JSON.stringify({ name: docname, lastMet: ddmmyyyy, location: locationn }),
     })
@@ -87,13 +88,14 @@ function App() {
         if (!res.ok) throw new Error(`Failed to add doctor: ${res.status}`);
         return res.json();
       })
+      console.log("hello")
       .then((newDoc) => {
         setDoclist([
           ...doclist,
           {
             id: newDoc.id,
             name: newDoc.name,
-            location: newDoc.location.toLowerCase(),
+            location: newDoc.location ? newDoc.location.toLowerCase() : "",
             lastMet: newDoc.lastMet,
           },
         ]);
@@ -104,7 +106,7 @@ function App() {
       .catch((err) => console.error("Error adding doctor:", err));
   };
 
-  // Filter and search logic remains the same
+  // Filter and search logic
   const handlefilter = (e) => {
     const value = e.target.value;
     const checked = e.target.checked;
