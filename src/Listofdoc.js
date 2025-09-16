@@ -33,7 +33,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
           year: m.year,
           month: m.month,
           label: m.label,
-          url: `${API_BASE_URL}/${m.download_url}`,
+          url: `${API_BASE_URL}${m.download_url}`,
         }));
         setMonths(formattedMonths);
       })
