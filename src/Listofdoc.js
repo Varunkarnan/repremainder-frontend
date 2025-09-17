@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Listofdoc.css";
-import { API_BASE_URL } from "./config";
+
 
 function getCookie(name) {
   let cookieValue = null;
@@ -22,9 +22,11 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
   const [months, setMonths] = useState([]);
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailMessage, setEmailMessage] = useState("");
+
+  const backendUrl = process.env.REACT_APP_API_URL;
   
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/doctors/months/`, {
+    fetch(`${backendUrl}/api/doctors/months/`, {
       credentials: "include",
     })
       .then((res) => res.json())
@@ -33,18 +35,18 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
           year: m.year,
           month: m.month,
           label: m.label,
-          url: `${API_BASE_URL}${m.download_url}`,
+          url: `${backendUrl}${m.download_url}`,
         }));
         setMonths(formattedMonths);
       })
       .catch((err) => console.error("Error fetching months:", err));
-  }, []);
+  }, [backendUrl]);
 
   const handleSendEmail = async () => {
     setEmailLoading(true);
     setEmailMessage("");
     try {
-      const response = await fetch(`${API_BASE_URL}/send-doctors-email/`, {
+      const response = await fetch(`${backendUrl}/send-doctors-email/`, {
         method: "GET",
         credentials: "include",
       });
@@ -67,7 +69,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
     const [year, month, day] = selectdate.split("-");
     const ddmmyyyy = `${day}-${month}-${year}`;
 
-    fetch(`${API_BASE_URL}/api/doctors/${id}/update/`, {
+    fetch(`${backendUrl}/api/doctors/${id}/update/`, {
       method: "PUT",
       credentials: "include",
       headers: {
@@ -91,7 +93,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
 
   const handleDlt = (id) => {
     if (!window.confirm("Are you sure you want to delete this doctor?")) return;
-    fetch(`${API_BASE_URL}/api/doctors/${id}/delete/`, {
+    fetch(`${backendUrl}/api/doctors/${id}/delete/`, {
       method: "DELETE",
       credentials: "include",
       headers: { "X-CSRFToken": getCookie("csrftoken") },
@@ -104,7 +106,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
   };
 
   const handleDownloadPdf = (year, month) => {
-    window.open(`${API_BASE_URL}/doctors/pdf/${year}/${month}/`, "_blank");
+    window.open(`${backendUrl}/doctors/pdf/${year}/${month}/`, "_blank");
   };
 
   return (
@@ -154,7 +156,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
                     <button
                       onClick={() =>
                         window.open(
-                          `${API_BASE_URL}/api/doctors/${doc.id}/download-history/`,
+                          `${backendUrl}/api/doctors/${doc.id}/download-history/`,
                           "_blank"
                         )
                       }
@@ -172,7 +174,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
       <div>
         <button
           className="pdf-action-btn"
-          onClick={() => window.open(`${API_BASE_URL}/api/download/all-doctors/pdf/`, "_blank")}
+          onClick={() => window.open(`${backendUrl}/api/download/all-doctors/pdf/`, "_blank")}
         >
           Download PDF
         </button>

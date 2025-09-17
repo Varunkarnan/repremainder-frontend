@@ -5,7 +5,7 @@ import Searchdoc from "./Searchdoc";
 import Filterdays from "./Filterdays";
 import Filterloc from "./Filterloc";
 import "./App.css";
-import { API_BASE_URL } from "./config";
+
 
 // Helper to get CSRF token
 function getCookie(name) {
@@ -39,7 +39,7 @@ function App() {
       return;
     }
 
-    fetch(`${API_BASE_URL}/api/doctors/`, {
+    fetch(`${backendUrl}/api/doctors/`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
       credentials: "include", // important for Django session
@@ -72,7 +72,7 @@ function App() {
     const [year, month, day] = lastMet.split("-");
     const ddmmyyyy = `${day}-${month}-${year}`;
 
-    fetch(`${API_BASE_URL}/api/doctors/`, {
+    fetch(`${backendUrl}/api/doctors/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
