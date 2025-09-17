@@ -49,14 +49,22 @@ function App() {
       return res.json();  
     })
     .then((data) => {
-      const formatted = (Array.isArray(data) ? data : data.results).map((doc) => ({
-      id: doc.id,
-      name: doc.name,
-      location: doc.location ? doc.location.toLowerCase() : "",
-      lastMet: doc.lastMet,
-  }));
-  setDoclist(formatted);
-})
+      if (!Array.isArray(data)) {
+        console.error("Unexpected API response:", data);
+        setDoclist([]); // don’t break rendering
+        return;
+      }
+
+      const formatted = data.map((doc) => ({
+        id: doc.id,
+        name: doc.name,
+        location: doc.location ? doc.location.toLowerCase() : "",
+        lastMet: doc.lastMet,
+      }));
+
+      setDoclist(formatted);
+    })
+
 
       .catch((err) => console.error("Error fetching doctors:", err));
   }, [backendUrl]);
