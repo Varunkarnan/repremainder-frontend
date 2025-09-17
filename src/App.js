@@ -48,17 +48,16 @@ function App() {
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       return res.json();  
     })
-      .then((data) => {
-        console.log("Fetched doctors:", data);
-        const doctorArray = data.results ? data.results : data;
-        const formatted = doctorArray.map((doc) => ({
-          id: doc.id,
-          name: doc.name,
-          location: doc.location ? doc.location.toLowerCase() : "",
-          lastMet: doc.lastMet,
-        }));
-        setDoclist(formatted);
-      })
+    .then((data) => {
+      const formatted = (Array.isArray(data) ? data : data.results).map((doc) => ({
+      id: doc.id,
+      name: doc.name,
+      location: doc.location ? doc.location.toLowerCase() : "",
+      lastMet: doc.lastMet,
+  }));
+  setDoclist(formatted);
+})
+
       .catch((err) => console.error("Error fetching doctors:", err));
   }, [backendUrl]);
 
