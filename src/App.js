@@ -6,8 +6,6 @@ import Filterdays from "./Filterdays";
 import Filterloc from "./Filterloc";
 import "./App.css";
 
-
-// Helper to get CSRF token
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== "") {
@@ -29,8 +27,25 @@ function App() {
   const [filterLocation, setfilterLocation] = useState([]);
   const [doctname, setDoctname] = useState("");
   const [dayFilter, setDayFilter] = useState("");
-
   const backendUrl = process.env.REACT_APP_API_URL;
+
+  // Fetch CSRF token on app load
+  useEffect(() => {
+    if (!backendUrl) {
+      console.error("REACT_APP_API_URL is not defined!");
+      return;
+    }
+    fetch(`${backendUrl}/api/get-csrf/`, {
+      method: "GET",
+      credentials: "include",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`Failed to fetch CSRF token: ${res.status}`);
+        return res.json();
+      })
+      .then((data) => console.log("CSRF token set:", data))
+      .catch((err) => console.error("Error setting CSRF token:", err));
+  }, [backendUrl]);
 
   // Fetch all doctors
   useEffect(() => {
@@ -38,36 +53,44 @@ function App() {
       console.error("REACT_APP_API_URL is not defined!");
       return;
     }
-
+    console.log("Fetching doctors from:", `${backendUrl}/api/doctors/`);
     fetch(`${backendUrl}/api/doctors/`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
-      credentials: "include", // important for Django session
+      credentials: "include",
     })
-    .then((res) => {
-      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-      return res.json();  
-    })
-    .then((data) => {
-      if (!Array.isArray(data)) {
-        console.error("Unexpected API response:", data);
-        setDoclist([]); // don’t break rendering
-        return;
-      }
-
-      const formatted = data.map((doc) => ({
-        id: doc.id,
-        name: doc.name,
-        location: doc.location ? doc.location.toLowerCase() : "",
-        lastMet: doc.lastMet,
-      }));
-
-      setDoclist(formatted);
-    })
-
-
+      .then((res) => {
+        console.log("Response status:", res.status, "Redirected:", res.redirected, "URL:", res.url);
+        if (res.redirected) {
+          console.error("Redirected to:", res.url);
+          window.location.href = "/login";
+          return;
+        }
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        console.log("API data:", data);
+        if (!Array.isArray(data)) {
+          console.error("Unexpected API response:", data);
+          setDoclist([]);
+          return;
+        }
+        const formatted = data.map((doc) => ({
+          id: doc.id,
+          name: doc.name,
+          location: doc.location ? doc.location.toLowerCase() : "",
+          lastMet: doc.lastMet,
+        }));
+        setDoclist(formatted);
+      })
       .catch((err) => console.error("Error fetching doctors:", err));
   }, [backendUrl]);
+
+  // Log doclist updates
+  useEffect(() => {
+    console.log("Updated doclist:", doclist);
+  }, [doclist]);
 
   // Add doctor
   const adddoclist = (e) => {
@@ -76,10 +99,8 @@ function App() {
       alert("Please fill all fields!");
       return;
     }
-
     const [year, month, day] = lastMet.split("-");
     const ddmmyyyy = `${day}-${month}-${year}`;
-
     fetch(`${backendUrl}/api/doctors/`, {
       method: "POST",
       headers: {
@@ -168,7 +189,6 @@ function App() {
           locationn={locationn}
           setLocationn={setLocationn}
         />
-
         <div className="top-right-filters">
           <Searchdoc doctname={doctname} setDoctname={setDoctname} />
           <Filterdays dayFilter={dayFilter} setDayFilter={setDayFilter} />
@@ -181,7 +201,6 @@ function App() {
           />
         </div>
       </div>
-
       <div className="table-container">
         <Listofdoc
           doclist={searchhdoc}

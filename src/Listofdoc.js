@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Listofdoc.css";
 
-
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== "") {
@@ -17,20 +16,33 @@ function getCookie(name) {
   return cookieValue;
 }
 
-const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
+const Listofdoc = ({ doclist, setDoclist, daysremaining, backendUrl }) => {
   const [newMet, setNewmet] = useState({});
   const [months, setMonths] = useState([]);
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailMessage, setEmailMessage] = useState("");
 
-  const backendUrl = process.env.REACT_APP_API_URL;
-  
   useEffect(() => {
+    if (!backendUrl) {
+      console.error("REACT_APP_API_URL is not defined!");
+      return;
+    }
+    console.log("Fetching months from:", `${backendUrl}/api/doctors/months/`);
     fetch(`${backendUrl}/api/doctors/months/`, {
       credentials: "include",
     })
-      .then((res) => res.json())
+      .then((res) => {
+        console.log("Months response status:", res.status, "Redirected:", res.redirected, "URL:", res.url);
+        if (res.redirected) {
+          console.error("Redirected to:", res.url);
+          window.location.href = "/login";
+          return;
+        }
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
+        console.log("Months data:", data);
         const formattedMonths = (data.months || []).map((m) => ({
           year: m.year,
           month: m.month,
@@ -78,7 +90,10 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
       },
       body: JSON.stringify({ lastMet: ddmmyyyy }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`Failed to update doctor: ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         if (data.success) {
           const updatedList = doclist.map((doc) =>
@@ -100,7 +115,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
     })
       .then((res) => {
         if (res.ok) setDoclist(doclist.filter((doc) => doc.id !== id));
-        else alert("Failed to delete doctor");
+        else throw new Error("Failed to delete doctor");
       })
       .catch((err) => console.error("Error deleting doctor:", err));
   };
@@ -108,6 +123,8 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
   const handleDownloadPdf = (year, month) => {
     window.open(`${backendUrl}/doctors/pdf/${year}/${month}/`, "_blank");
   };
+
+  console.log("Listofdoc received doclist:", doclist);
 
   return (
     <>
@@ -133,7 +150,7 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
               return (
                 <tr key={doc.id}>
                   <td>{index + 1}</td>
-                  <td>Dr.{doc.name}</td>
+                  <td>Dr. {doc.name}</td>
                   <td>{doc.location}</td>
                   <td>{doc.lastMet}</td>
                   <td>{daysremainingg} Days</td>
@@ -170,7 +187,6 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
           </tbody>
         </table>
       </div>
-
       <div>
         <button
           className="pdf-action-btn"
@@ -179,14 +195,12 @@ const Listofdoc = ({ doclist, setDoclist, daysremaining }) => {
           Download PDF
         </button>
       </div>
-
       <div className="my-4">
         <button className="pdf-action-btn" onClick={handleSendEmail} disabled={emailLoading}>
           {emailLoading ? "Sending Email..." : "Send Doctors PDF to Email"}
         </button>
         {emailMessage && <p>{emailMessage}</p>}
       </div>
-
       <div className="p-4">
         <h2>Download Monthly Doctor Reports</h2>
         <div>
